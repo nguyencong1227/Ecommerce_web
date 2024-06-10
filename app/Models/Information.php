@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Contact extends Model
+class Information extends Model
 {
-    public $table = "lienhe";
+    public $table = "thongtincuahang";
     public $timestamps = false;
 }
