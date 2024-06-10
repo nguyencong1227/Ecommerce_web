@@ -1,109 +1,81 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\dashboard\Analytics;
-use App\Http\Controllers\layouts\WithoutMenu;
-use App\Http\Controllers\layouts\WithoutNavbar;
-use App\Http\Controllers\layouts\Fluid;
-use App\Http\Controllers\layouts\Container;
-use App\Http\Controllers\layouts\Blank;
-use App\Http\Controllers\pages\AccountSettingsAccount;
-use App\Http\Controllers\pages\AccountSettingsNotifications;
-use App\Http\Controllers\pages\AccountSettingsConnections;
-use App\Http\Controllers\pages\MiscError;
-use App\Http\Controllers\pages\MiscUnderMaintenance;
-use App\Http\Controllers\authentications\LoginBasic;
-use App\Http\Controllers\authentications\RegisterBasic;
-use App\Http\Controllers\authentications\ForgotPasswordBasic;
-use App\Http\Controllers\cards\CardBasic;
-use App\Http\Controllers\user_interface\Accordion;
-use App\Http\Controllers\user_interface\Alerts;
-use App\Http\Controllers\user_interface\Badges;
-use App\Http\Controllers\user_interface\Buttons;
-use App\Http\Controllers\user_interface\Carousel;
-use App\Http\Controllers\user_interface\Collapse;
-use App\Http\Controllers\user_interface\Dropdowns;
-use App\Http\Controllers\user_interface\Footer;
-use App\Http\Controllers\user_interface\ListGroups;
-use App\Http\Controllers\user_interface\Modals;
-use App\Http\Controllers\user_interface\Navbar;
-use App\Http\Controllers\user_interface\Offcanvas;
-use App\Http\Controllers\user_interface\PaginationBreadcrumbs;
-use App\Http\Controllers\user_interface\Progress;
-use App\Http\Controllers\user_interface\Spinners;
-use App\Http\Controllers\user_interface\TabsPills;
-use App\Http\Controllers\user_interface\Toasts;
-use App\Http\Controllers\user_interface\TooltipsPopovers;
-use App\Http\Controllers\user_interface\Typography;
-use App\Http\Controllers\extended_ui\PerfectScrollbar;
-use App\Http\Controllers\extended_ui\TextDivider;
-use App\Http\Controllers\icons\Boxicons;
-use App\Http\Controllers\form_elements\BasicInput;
-use App\Http\Controllers\form_elements\InputGroups;
-use App\Http\Controllers\form_layouts\VerticalForm;
-use App\Http\Controllers\form_layouts\HorizontalForm;
-use App\Http\Controllers\tables\Basic as TablesBasic;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
 
-// Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
+Route::group(['namespace' => 'Auth','prefix' => 'thanh-vien'], function(){
+    Route::get('dang-ky','RegisterController@getFormRegister')->name('get.user.register'); // đăng ký
+    Route::post('dang-ky','RegisterController@postRegister'); // xử lý đăng ký
 
-// layout
-Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
-Route::get('/layouts/without-navbar', [WithoutNavbar::class, 'index'])->name('layouts-without-navbar');
-Route::get('/layouts/fluid', [Fluid::class, 'index'])->name('layouts-fluid');
-Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-container');
-Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
+    Route::get('dang-nhap','LoginController@getFormLogin')->name('get.user.login'); // đăng nhập
+    Route::post('dang-nhap','LoginController@postLogin')->name('post.user.login'); // xử lý đăng nhập
 
-// pages
-Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-account');
-Route::get('/pages/account-settings-notifications', [AccountSettingsNotifications::class, 'index'])->name('pages-account-settings-notifications');
-Route::get('/pages/account-settings-connections', [AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
-Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
-Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
+    Route::get('dang-xuat','LoginController@getLogout')->name('get.user.logout'); // đăng xuất
 
-// authentication
-Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
-Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
-Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
+});
 
-// cards
-Route::get('/cards/basic', [CardBasic::class, 'index'])->name('cards-basic');
 
-// User Interface
-Route::get('/ui/accordion', [Accordion::class, 'index'])->name('ui-accordion');
-Route::get('/ui/alerts', [Alerts::class, 'index'])->name('ui-alerts');
-Route::get('/ui/badges', [Badges::class, 'index'])->name('ui-badges');
-Route::get('/ui/buttons', [Buttons::class, 'index'])->name('ui-buttons');
-Route::get('/ui/carousel', [Carousel::class, 'index'])->name('ui-carousel');
-Route::get('/ui/collapse', [Collapse::class, 'index'])->name('ui-collapse');
-Route::get('/ui/dropdowns', [Dropdowns::class, 'index'])->name('ui-dropdowns');
-Route::get('/ui/footer', [Footer::class, 'index'])->name('ui-footer');
-Route::get('/ui/list-groups', [ListGroups::class, 'index'])->name('ui-list-groups');
-Route::get('/ui/modals', [Modals::class, 'index'])->name('ui-modals');
-Route::get('/ui/navbar', [Navbar::class, 'index'])->name('ui-navbar');
-Route::get('/ui/offcanvas', [Offcanvas::class, 'index'])->name('ui-offcanvas');
-Route::get('/ui/pagination-breadcrumbs', [PaginationBreadcrumbs::class, 'index'])->name('ui-pagination-breadcrumbs');
-Route::get('/ui/progress', [Progress::class, 'index'])->name('ui-progress');
-Route::get('/ui/spinners', [Spinners::class, 'index'])->name('ui-spinners');
-Route::get('/ui/tabs-pills', [TabsPills::class, 'index'])->name('ui-tabs-pills');
-Route::get('/ui/toasts', [Toasts::class, 'index'])->name('ui-toasts');
-Route::get('/ui/tooltips-popovers', [TooltipsPopovers::class, 'index'])->name('ui-tooltips-popovers');
-Route::get('/ui/typography', [Typography::class, 'index'])->name('ui-typography');
+Route::get('/', 'HomeController@index')->name('client.home');
+Route::get('/product/{id}', 'ProductController@detail')->name('client.product_detail');
+Route::get('/contact', 'ContactController@create')->name('client.contact_create');
+Route::post('contact', 'ContactController@store')->name('post.contact');
+Route::get('/about', 'PageController@about')->name('client.about');
+Route::get('/shopping-guide', 'PageController@shoppingGuide')->name('client.shopping_guide');
+Route::get('/policy', 'PageController@policy')->name('client.policy');
+Route::get('/login', 'LoginController@create')->name('client.login_create');
+Route::get('/category_product/{id}', 'ProductCategoryController@detail')->name('client.category_producte_detail');
+Route::get('search', 'HomeController@search')->name('client.search');
+Route::get('/info/user', 'InfoUserController@index')->name('info.user');
+Route::post('/update/info/user', 'InfoUserController@updateInfoUser')->name('update.info.user');
+Route::get('list/order/transported', 'InfoUserController@listOrderTransported')->name('list.order.transported');
+Route::get('cancel/order/{id}', 'InfoUserController@cancelOrder')->name('cancel.order');
+Route::get('list/order/success', 'InfoUserController@listOrderSuccess')->name('list.order.success');
+Route::get('/billing/{id}', 'BillingController@billing')->name('billing');
+Route::get('/change/password', 'InfoUserController@getFormChangePasswor')->name('change.password');
+Route::post('/change/password', 'InfoUserController@changePassword')->name('change.password');
 
-// extended ui
-Route::get('/extended/ui-perfect-scrollbar', [PerfectScrollbar::class, 'index'])->name('extended-ui-perfect-scrollbar');
-Route::get('/extended/ui-text-divider', [TextDivider::class, 'index'])->name('extended-ui-text-divider');
+Route::get('don-hang.html','ShoppingCartController@index')->name('get.shopping.list'); // gio hang
+Route::prefix('shopping')->group(function () {
+    Route::get('add/{id}','ShoppingCartController@add')->name('get.shopping.add'); // thêm giỏ hàng
+    Route::get('delete/{id}','ShoppingCartController@delete')->name('get.shopping.delete'); // xoá sp trong gi hàng
+    Route::get('update/{id}','ShoppingCartController@update')->name('ajax_get.shopping.update'); // cập nhật
+    Route::get('info/payment', 'ShoppingCartController@getFromPayment')->name('get.info.payment');
+    Route::post('pay','ShoppingCartController@saveOrder')->name('post.shopping.pay'); // xử lý giỏ hàng lưu thông tin
+    Route::get('delete-all','ShoppingCartController@deleteAll')->name('get.shopping.delete_all'); // xử lý giỏ hàng lưu thông tin
+});
 
-// icons
-Route::get('/icons/boxicons', [Boxicons::class, 'index'])->name('icons-boxicons');
-
-// form elements
-Route::get('/forms/basic-inputs', [BasicInput::class, 'index'])->name('forms-basic-inputs');
-Route::get('/forms/input-groups', [InputGroups::class, 'index'])->name('forms-input-groups');
-
-// form layouts
-Route::get('/form/layouts-vertical', [VerticalForm::class, 'index'])->name('form-layouts-vertical');
-Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('form-layouts-horizontal');
-
-// tables
-Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+Route::namespace('Admin')->prefix('admin')->middleware(['auth'])->group(function () {
+    Route::middleware(['is_admin'])->group(function () {
+        Route::get('/', 'DashboardController@index')->name('admin.dashboard');
+        Route::resource('product', 'ProductController')->except(['show']);
+        Route::resource('order', 'OrdersController');
+        Route::get('order/pack/{flg}', 'OrdersController@pack')->name('order.pack');
+        Route::get('order/deliver/{status}', 'OrdersController@deliver')->name('order.deliver');
+        Route::delete('order/cancel/{order_id}', 'OrdersController@cancel')->name('order.cancel');
+        Route::post('update/shiper/{id}', 'OrdersController@updateShiper')->name('order.shiper.status');
+        Route::post('update/status/{id}', 'OrdersController@updateStatus')->name('order.update.status');
+        Route::resource('category_product', 'CategoryProductController')->except(['show']);
+        Route::resource('supplier', 'SuppliersController')->except(['show']);
+        Route::resource('information', 'InformationsController')->except(['show']);
+        Route::resource('user', 'UsersController')->except(['show']);
+        Route::get('/contact', 'ContactsController@index')->name('contact.index');
+        Route::delete('contact/destroy/{id}', 'ContactsController@destroy')->name('contact.destroy');
+        Route::get('update/confirm/{id}', 'OrdersController@updateConfirm')->name('order.update.confirm');
+    });
+    Route::middleware(['is_role_access'])->group(function () {
+        Route::resource('order', 'OrdersController')->except(['show']);
+    });
+});
+Auth::routes(['register' => false]);
+Route::get('/logout', 'Auth\LoginController@logout')->name('auth.logout');
+Route::get('admin/logout', 'Auth\LoginController@logoutAdmin')->name('auth.admin.logout');
+Route::post('admin/login', 'Auth\LoginController@postAdminLogin')->name('auth.admin.login');
+Route::get('/home', 'HomeController@index')->name('home');
