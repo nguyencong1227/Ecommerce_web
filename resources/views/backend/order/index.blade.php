@@ -1,155 +1,187 @@
-@extends('backend.layouts.master')
+@extends('backend.layouts.app')
+@section('title') Danh sách đơn hàng @endsection
+@section('content')
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Main row -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-header">
+                            <h3 class="card-title">Danh sách đơn hàng</h3>
+                            <div class="form-search">
+                                <form class="form-inline" method="get">
+                                    <div class="form-row align-items-center margin-auto">
+                                        <div class="form-group mr-2 mb-2">
+                                            <input type="text" name="name" value="{{ Request::get('name') }}" class="form-control" id="name"
+                                                   placeholder="Tên khách hàng">
+                                        </div>
+                                        <div class="form-group mr-2 mb-2">
+                                            <select name="status" id="" class="form-control">
+                                                <option value="">Chọn trạng thái</option>
+                                                @foreach($status as $key => $statu)
+                                                    @if($menu == '')
+                                                        @if($key < 3 )
+                                                            <option value="{{ $key }}" {{ Request::get('status') == $key ? 'selected="selected"' : '' }}>{{ $statu }}</option>
+                                                        @endif
+                                                    @else
+                                                        @if($key >= 3 && $key <= 5)
+                                                            <option value="{{ $key }}" {{ Request::get('status') == $key ? 'selected="selected"' : '' }}>{{ $statu }}</option>
+                                                        @endif
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group mr-2 mb-2">
+                                            <select name="employee_id" id="" class="form-control">
+                                                <option value="">Chọn nhân viên giao</option>
+                                                <option value="null">Chưa chọn nhân viên giao</option>
+                                                @foreach($shipers as $key => $value)
+                                                    <option value="{{ $value->id }}" {{ Request::get('employee_id') == $value->id ? 'selected="selected"' : '' }}>{{ $value->Ten }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        @if(!empty($menu))
+                                            <input type="hidden" name="menu" value="success">
+                                        @endif
+                                        <button type="submit" class="btn-search btn btn-primary mb-2"><span
+                                                    class="fas fa-search"></span> Lọc </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-hover text-nowrap">
+                                <thead>
+                                <tr>
+                                    {{--<th>Stt</th>--}}
+                                    <th>ID</th>
+                                    <th>Tên KH</th>
+                                    <th style="width: 200px !important;">Địa chỉ</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Chi tiết</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Trạng thái</th>
+                                    <th>Người giao</th>
+                                    <th>Hóa đơn</th>
+                                    <th>Hành động</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php $disableShiper = [3, 4, 5] ?>
+                                @if (!$orders->isEmpty())
+                                    @php $i = $orders->firstItem() @endphp
+                                    @foreach($orders as $item)
+                                        <tr>
+                                            {{--<td>{{ $i }}</td>--}}
+                                            <td>{{ $item->id }}</td>
+                                            <td>{{ isset($item->Ten)? $item->Ten :  $item->user->Ten}}</td>
+                                            <td style="width: 200px !important;">
+                                                <p>
+                                                    {{ isset($item->user->DiaChi)? $item->user->DiaChi :  $item->user->DiaChi}}
+                                                </p>
+                                            </td>
+                                            <td>{{ isset($item->user->SDT)? $item->user->SDT :  $item->user->SDT}}</td>
+                                            <td>{{ number_format($item->TongTien,0,',','.') }} VNĐ</td>
+                                            <td><a target="_blank" href="{{ route('order.show', $item->id) }}">Chi tiết</a></td>
+                                            <td>{{ $item->NgayTao }}</td>
+                                            <td>
+                                                <form class="status-form" method="POST" action="{{ route('order.update',$item->id) }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="id" value="{{ $item->id }}">
+                                                    <select class="form-control status-select" name="status" data-id="{{ $item->id }}">
+                                                        @foreach ($status as $key => $value)
+                                                            <option value="{{ $key }}" {{ $key == $item->TrangThai ? 'selected' : '' }}>
+                                                                {{ $value }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </form>
+                                            </td>
 
-@section('main-content')
- <!-- DataTales Example -->
- <div class="card shadow mb-4">
-     <div class="row">
-         <div class="col-md-12">
-            @include('backend.layouts.notification')
-         </div>
-     </div>
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary float-left">Order Lists</h6>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        @if(count($orders)>0)
-        <table class="table table-bordered" id="order-dataTable" width="100%" cellspacing="0">
-          <thead>
-            <tr>
-              <th>S.N.</th>
-              <th>Order No.</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Quantity</th>
-              <th>Charge</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <th>S.N.</th>
-              <th>Order No.</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Quantity</th>
-              <th>Charge</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>Action</th>
-              </tr>
-          </tfoot>
-          <tbody>
-            @foreach($orders as $order)  
-            @php
-                $shipping_charge=DB::table('shippings')->where('id',$order->shipping_id)->pluck('price');
-            @endphp 
-                <tr>
-                    <td>{{$order->id}}</td>
-                    <td>{{$order->order_number}}</td>
-                    <td>{{$order->first_name}} {{$order->last_name}}</td>
-                    <td>{{$order->email}}</td>
-                    <td>{{$order->quantity}}</td>
-                    <td>@foreach($shipping_charge as $data) $ {{number_format($data,2)}} @endforeach</td>
-                    <td>${{number_format($order->total_amount,2)}}</td>
-                    <td>
-                        @if($order->status=='new')
-                          <span class="badge badge-primary">{{$order->status}}</span>
-                        @elseif($order->status=='process')
-                          <span class="badge badge-warning">{{$order->status}}</span>
-                        @elseif($order->status=='delivered')
-                          <span class="badge badge-success">{{$order->status}}</span>
-                        @else
-                          <span class="badge badge-danger">{{$order->status}}</span>
+                                            <td>
+                                                <select name="employee_order" class="update_employee_order" {{ in_array($item->TrangThai, $disableShiper) ? 'disabled' : '' }}>
+                                                    <option value="" >-- Chọn shiper --</option>
+                                                    @foreach($shipers as $value)
+                                                        <option value="{{ $value->id }}" {{ $item->id_NV == $value->id ? 'selected="selected"' : '' }}>{{ $value->Ten }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <button type="button" class="btn btn-primary btn-xs btn-change-shiper" style="width: 50px" url="{{ route('order.shiper.status', $item->id) }}" >Lưu</button>
+                                            </td>
+                                            <td class="billing"><a href="{{route('billing', $item->id)}}" title="Hóa đơn"><i class="fas fa-file-alt"></i></a></td>
+                                            @if(!in_array($item->status, $disableShiper))
+                                            <td>
+                                                <a id="{{$item->id}}" class="btn btn-danger btn-sm btn-delete" href="#">
+                                                    <i class="fas fa-trash"></i> Xóa
+                                                    <form method="post" action="{{ route('order.destroy', $item->id) }}"
+                                                          id="form_{{$item->id}}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                </a>
+                                            </td>
+                                            @endif
+                                        </tr>
+                                        @php $i++ @endphp
+                                    @endforeach
+                                 @endif
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                        @if($orders->hasPages())
+                          <div class="pagination text-center mb-4">
+                            {!! $orders->appends($query)->links() !!}
+                          </div>
                         @endif
-                    </td>
-                    <td>
-                        <a href="{{route('order.show',$order->id)}}" class="btn btn-warning btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
-                        <a href="{{route('order.edit',$order->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                        <form method="POST" action="{{route('order.destroy',[$order->id])}}">
-                          @csrf 
-                          @method('delete')
-                              <button class="btn btn-danger btn-sm dltBtn" data-id={{$order->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                        </form>
-                    </td>
-                </tr>  
-            @endforeach
-          </tbody>
-        </table>
-        <span style="float:right">{{$orders->links()}}</span>
-        @else
-          <h6 class="text-center">No orders found!!! Please order some products</h6>
-        @endif
-      </div>
-    </div>
-</div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row (main row) -->
+        </div><!-- /.container-fluid -->
+    </section>
+    @include('backend.common.modal_delete', ['messageConfirm' => 'Bạn có muốn xóa'])
 @endsection
-
-@push('styles')
-  <link href="{{asset('backend/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
-  <style>
-      div.dataTables_wrapper div.dataTables_paginate{
-          display: none;
-      }
-  </style>
-@endpush
-
-@push('scripts')
-
-  <!-- Page level plugins -->
-  <script src="{{asset('backend/vendor/datatables/jquery.dataTables.min.js')}}"></script>
-  <script src="{{asset('backend/vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-
-  <!-- Page level custom scripts -->
-  <script src="{{asset('backend/js/demo/datatables-demo.js')}}"></script>
-  <script>
-      
-      $('#order-dataTable').DataTable( {
-            "columnDefs":[
-                {
-                    "orderable":false,
-                    "targets":[8]
-                }
-            ]
-        } );
-
-        // Sweet alert
-
-        function deleteData(id){
-            
-        }
-  </script>
-  <script>
-      $(document).ready(function(){
+@section('js-custom.script')
+    <script>
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-          $('.dltBtn').click(function(e){
-            var form=$(this).closest('form');
-              var dataID=$(this).data('id');
-              // alert(dataID);
-              e.preventDefault();
-              swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this data!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                       form.submit();
-                    } else {
-                        swal("Your data is safe!");
+
+        $(function () {
+            $('.btn-change-shiper').click(function () {
+                var url = $(this).attr('url');
+                var shiperId = $(this).parent().find('.update_employee_order').val();
+
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    type:'json',
+                    data: {
+                        shiperId : shiperId,
                     }
+                }).done(function( results ) {
+                    alert('Cập nhật shiper thành công !!!')
+                    var curentUrrl = window.location.href;
+                    window.location.href = curentUrrl
                 });
-          })
-      })
-  </script>
-@endpush
+            });
+        })
+        document.addEventListener('DOMContentLoaded', function () {
+            const statusSelects = document.querySelectorAll('.status-select');
+
+            statusSelects.forEach(select => {
+                select.addEventListener('change', function () {
+                    const form = this.closest('.status-form');
+                    form.submit();
+                });
+            });
+        });
+    </script>
+@endsection
