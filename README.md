@@ -6,4 +6,5 @@
 
 ## Báo cáo Bài tập lớn
 
+https://drive.google.com/drive/folders/1nTffhS3RJviKbE5NU2JhUVP_VoDAAVfL?usp=sharing
 https://docs.google.com/document/d/1bTORaVfGSGHxg38czTSd809b2SJKnyJ2ev_N-5pV4eQ/edit?usp=sharing
