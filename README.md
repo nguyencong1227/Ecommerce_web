@@ -1,6 +1,7 @@
 Website: https://congnguyenchi.id.vn/
 
-# Ecommerce_web: Clothing store 
+# Ecommerce_web: Clothing store
+Using mvc structure/ NF3 / hosting server
 ## Thành viên nhóm:
 - Nguyễn Chí Công
 - Dương Minh Hưng
